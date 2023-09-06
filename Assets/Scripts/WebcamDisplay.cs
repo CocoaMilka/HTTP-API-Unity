@@ -3,9 +3,12 @@ using UnityEngine.UI;
 
 public class WebcamDisplay : MonoBehaviour
 {
-    public RawImage rawImage; // Reference to the RawImage component
+    public RawImage rawImage;
+    public RawImage frame;
 
-    public WebCamTexture webcamTexture; // Reference to the webcam texture
+    public WebCamTexture webcamTexture; 
+
+    private Texture2D capturedFrame; 
 
     void Start()
     {
@@ -20,6 +23,9 @@ public class WebcamDisplay : MonoBehaviour
 
             // Assign the webcam texture to the RawImage component
             rawImage.texture = webcamTexture;
+
+            // Create a Texture2D for capturing frames
+            capturedFrame = new Texture2D(webcamTexture.width, webcamTexture.height);
         }
         else
         {
@@ -27,8 +33,19 @@ public class WebcamDisplay : MonoBehaviour
         }
     }
 
-    void Update()
+    public void grabFrame()
     {
-        // You can add any additional logic or functionality here if needed
+        if (!webcamTexture.isPlaying)
+        {
+            Debug.LogWarning("Webcam is not playing.");
+            return;
+        }
+
+        // Capture the current frame from the webcam texture
+        capturedFrame.SetPixels(webcamTexture.GetPixels());
+        capturedFrame.Apply();
+
+        // Assign the captured frame to the frame RawImage component
+        frame.texture = capturedFrame;
     }
 }

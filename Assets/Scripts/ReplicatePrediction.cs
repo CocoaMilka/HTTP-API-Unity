@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Text;
 using UnityEngine;
@@ -9,15 +10,15 @@ public class ReplicatePrediction : MonoBehaviour
     private string apiUrl = "https://api.replicate.com/v1/predictions";
     private string apiToken = "r8_6a9DbRkhmsgg9wFKGo0by8hkQ2v9Pgm3YJixU";
     private string modelVersion = "371aeee1ce0c5efd25bbef7a4527ec9e59188b963ebae1eeb851ddc145685c17";
-    private string inputImage = "https://www.carbonfibersupport.com/wp-content/uploads/2021/04/ConcreteCrack.jpg";
+    //private string inputImage = "https://www.carbonfibersupport.com/wp-content/uploads/2021/04/ConcreteCrack.jpg";
 
     private string predictionId;
     private bool isPredictionComplete;
 
-    //public RawImage inputImageRaw;
+    public RawImage inputImage;
     public RawImage resultImage;
 
-    public Texture2D inputTexture; // Assign the input texture in the Inspector
+    public Texture2D inputTexture;
 
     private void Start()
     {
@@ -31,13 +32,15 @@ public class ReplicatePrediction : MonoBehaviour
 
     public void StartPrediction()
     {
+        inputTexture = (Texture2D)inputImage.texture;
         StartCoroutine(GetPrediction());
         Debug.Log("Starting request...");
     }
 
     private IEnumerator GetPrediction()
     {
-        // Create POST request to create prediction
+        // Create POST request to create prediction FOR URL IMAGES
+        /*
         string postData = "{\"version\": \"" + modelVersion + "\", \"input\": {\"input_image\": \"" + inputImage + "\"}}";
         UnityWebRequest predictionRequest = new UnityWebRequest(apiUrl, "POST");
         byte[] bodyRaw = Encoding.UTF8.GetBytes(postData);
@@ -45,15 +48,23 @@ public class ReplicatePrediction : MonoBehaviour
         predictionRequest.downloadHandler = new DownloadHandlerBuffer();
         predictionRequest.SetRequestHeader("Authorization", "Token " + apiToken);
         predictionRequest.SetRequestHeader("Content-Type", "application/json");
+        */
 
-        /*
+
+        // Convert input texture to PNG bytes
         byte[] inputImageData = inputTexture.EncodeToPNG();
+        string base64InputImage = Convert.ToBase64String(inputImageData);
+        string dataUrl = "data:image/png;base64," + base64InputImage;
+
+        // Step 1: Create a prediction
+        string postData = "{\"version\": \"" + modelVersion + "\", \"input\": {\"input_image\": \"" + dataUrl + "\"}}";
+
         UnityWebRequest predictionRequest = new UnityWebRequest(apiUrl, "POST");
-        predictionRequest.uploadHandler = new UploadHandlerRaw(inputImageData);
+        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(postData);
+        predictionRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
         predictionRequest.downloadHandler = new DownloadHandlerBuffer();
         predictionRequest.SetRequestHeader("Authorization", "Token " + apiToken);
-        predictionRequest.SetRequestHeader("Content-Type", "image/png");
-        */
+        predictionRequest.SetRequestHeader("Content-Type", "application/json");
 
         yield return predictionRequest.SendWebRequest();
 

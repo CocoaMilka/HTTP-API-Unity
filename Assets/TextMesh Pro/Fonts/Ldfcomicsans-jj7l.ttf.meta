@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 0b23da83a522e0e4ea4da25e8cceb755
+guid: 1af2749ca16ec2e4d9425b598ff7157d
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - Roboto
+  - LDFComicSans
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0
